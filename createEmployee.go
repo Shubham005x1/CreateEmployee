@@ -131,7 +131,9 @@ func CreateEmployee(w http.ResponseWriter, r *http.Request) {
 	msg := &pubsub.Message{
 		Data: []byte(fmt.Sprintf("Employee %s created", emp.ID)),
 	}
-	_, err = topic.Publish(ctx, msg).Get(ctx)
+	// result, _ := topic.Publish(ctx, msg).Get(ctx)
+	// serverID, err := result.Get(ctx)
+	result := topic.Publish(ctx, msg)
 	serverID, err := result.Get(ctx)
 	if err != nil {
 		// Handle error publishing to Pub/Sub.
@@ -151,7 +153,11 @@ func CreateEmployee(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-	
+	logger.Log(logging.Entry{
+		Payload:  "Message published to Pub/Sub",
+		Severity: logging.Info,
+	})
+
 	// Add the employee data to Firestore.
 	_, _, err = client.Collection("employees").Add(ctx, emp)
 	if err != nil {
@@ -162,11 +168,7 @@ func CreateEmployee(w http.ResponseWriter, r *http.Request) {
 			Severity: logging.Error,
 		})
 		return
-	}logger.Log(logging.Entry{
-		Payload:  "Message published to Pub/Sub",
-		Severity: logging.Info,
-	})
-	
+	}
 
 	// Log that the employee was added successfully.
 	logger.Log(logging.Entry{
