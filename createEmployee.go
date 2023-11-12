@@ -128,8 +128,18 @@ func CreateEmployee(w http.ResponseWriter, r *http.Request) {
 		Payload:  "Request body parsed successfully",
 		Severity: logging.Info,
 	})
+	employeeJSON, err := json.Marshal(emp)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error serializing employee to JSON: %v", err), http.StatusInternalServerError)
+		logger.Log(logging.Entry{
+			Payload:  fmt.Sprintf("Error serializing employee to JSON: %v", err),
+			Severity: logging.Error,
+		})
+		return
+	}
+
 	msg := &pubsub.Message{
-		Data: []byte(fmt.Sprintf("Employee %s created", emp.ID)),
+		Data: employeeJSON,
 	}
 	// result, _ := topic.Publish(ctx, msg).Get(ctx)
 	// serverID, err := result.Get(ctx)

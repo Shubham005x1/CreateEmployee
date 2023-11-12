@@ -8,7 +8,6 @@ require (
 	cloud.google.com/go/pubsub v1.33.0
 	github.com/GoogleCloudPlatform/functions-framework-go v1.8.0
 	github.com/Shubham005x1/MyValidations v1.0.0
-	github.com/gorilla/mux v1.8.1
 	golang.org/x/crypto v0.9.0
 )
 
