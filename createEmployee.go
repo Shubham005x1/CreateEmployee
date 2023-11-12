@@ -132,6 +132,7 @@ func CreateEmployee(w http.ResponseWriter, r *http.Request) {
 		Data: []byte(fmt.Sprintf("Employee %s created", emp.ID)),
 	}
 	_, err = topic.Publish(ctx, msg).Get(ctx)
+	serverID, err := result.Get(ctx)
 	if err != nil {
 		// Handle error publishing to Pub/Sub.
 		http.Error(w, fmt.Sprintf("Error publishing to Pub/Sub: %v", err), http.StatusInternalServerError)
@@ -141,6 +142,16 @@ func CreateEmployee(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
+	if serverID == "" {
+		// The message was not successfully published.
+		http.Error(w, "Failed to publish message to Pub/Sub", http.StatusInternalServerError)
+		logger.Log(logging.Entry{
+			Payload:  "Failed to publish message to Pub/Sub",
+			Severity: logging.Error,
+		})
+		return
+	}
+	
 	// Add the employee data to Firestore.
 	_, _, err = client.Collection("employees").Add(ctx, emp)
 	if err != nil {
@@ -151,14 +162,18 @@ func CreateEmployee(w http.ResponseWriter, r *http.Request) {
 			Severity: logging.Error,
 		})
 		return
-	}
+	}logger.Log(logging.Entry{
+		Payload:  "Message published to Pub/Sub",
+		Severity: logging.Info,
+	})
+	
 
 	// Log that the employee was added successfully.
 	logger.Log(logging.Entry{
 		Payload:  "Employee added successfully",
 		Severity: logging.Info,
 	})
-
+	defer pubsubClient.Close()
 	// Respond with a status code indicating success and a message.
 	w.WriteHeader(http.StatusCreated)
 	w.Write([]byte("Employee created successfully"))
