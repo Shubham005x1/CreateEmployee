@@ -9,6 +9,8 @@ import (
 
 	"cloud.google.com/go/firestore"
 	"cloud.google.com/go/logging"
+	"cloud.google.com/go/pubsub"
+	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
 	"github.com/Shubham005x1/MyValidations/validations"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -19,6 +21,10 @@ var (
 	onceClient sync.Once
 )
 
+func init() {
+	functions.HTTP("CreateEmployee", CreateEmployee)
+}
+
 // CreateEmployee handles the creation of an employee record.
 func CreateEmployee(w http.ResponseWriter, r *http.Request) {
 	// Create a new background context.
@@ -26,7 +32,7 @@ func CreateEmployee(w http.ResponseWriter, r *http.Request) {
 
 	// Initialize Firestore connection.
 	initializeFirestore()
-
+	initializePubsub()
 	// Initialize the Logging client for logging events.
 	logClient, _ = logging.NewClient(ctx, "takeoff-task-3")
 
@@ -122,7 +128,19 @@ func CreateEmployee(w http.ResponseWriter, r *http.Request) {
 		Payload:  "Request body parsed successfully",
 		Severity: logging.Info,
 	})
-
+	msg := &pubsub.Message{
+		Data: []byte(fmt.Sprintf("Employee %s created", emp.ID)),
+	}
+	_, err = topic.Publish(ctx, msg).Get(ctx)
+	if err != nil {
+		// Handle error publishing to Pub/Sub.
+		http.Error(w, fmt.Sprintf("Error publishing to Pub/Sub: %v", err), http.StatusInternalServerError)
+		logger.Log(logging.Entry{
+			Payload:  fmt.Sprintf("Error publishing to Pub/Sub: %v", err),
+			Severity: logging.Error,
+		})
+		return
+	}
 	// Add the employee data to Firestore.
 	_, _, err = client.Collection("employees").Add(ctx, emp)
 	if err != nil {

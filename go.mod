@@ -5,8 +5,10 @@ go 1.21.1
 require (
 	cloud.google.com/go/firestore v1.9.0
 	cloud.google.com/go/logging v1.7.0
+	cloud.google.com/go/pubsub v1.33.0
 	github.com/GoogleCloudPlatform/functions-framework-go v1.8.0
 	github.com/Shubham005x1/MyValidations v1.0.0
+	github.com/gorilla/mux v1.8.1
 	golang.org/x/crypto v0.9.0
 )
 
@@ -15,6 +17,7 @@ require (
 	cloud.google.com/go/compute v1.19.3 // indirect
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
 	cloud.google.com/go/functions v1.15.1 // indirect
+	cloud.google.com/go/iam v1.1.0 // indirect
 	cloud.google.com/go/longrunning v0.5.0 // indirect
 	github.com/cloudevents/sdk-go/v2 v2.14.0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect

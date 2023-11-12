@@ -10,14 +10,13 @@ import (
 // main function sets up the HTTP server and routes.
 func main() {
 	// Create a new router using gorilla/mux.
-	// router := mux.NewRouter()
+	//router := mux.NewRouter()
 
 	// // Initialize Firestore connection.
 	// initializeFirestore()
 
 	// // Define a route that listens for POST requests on the "/employees" endpoint and
 	// // calls the CreateEmployee function to handle the request.
-	// router.HandleFunc("/employees", CreateEmployee).Methods("POST")
 
 	// // Start the server and listen on port :8080.
 	// log.Println("Server started on :8080")
