@@ -124,7 +124,8 @@ func CreateEmployee(w http.ResponseWriter, r *http.Request) {
 		Severity: logging.Info,
 	})
 	msg := &pubsub.Message{
-		Data: []byte(emp.Email),
+		Data:       []byte(emp.Email),
+		Attributes: map[string]string{"Firstname": fmt.Sprintf(emp.FirstName)},
 	}
 	// result, _ := topic.Publish(ctx, msg).Get(ctx)
 	// serverID, err := result.Get(ctx)
