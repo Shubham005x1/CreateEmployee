@@ -15,9 +15,9 @@ import (
 )
 
 var (
-	client     *firestore.Client
-	logClient  *logging.Client
-	onceClient sync.Once
+	client    *firestore.Client
+	logClient *logging.Client
+	Once      sync.Once
 )
 
 // CreateEmployee handles the creation of an employee record.

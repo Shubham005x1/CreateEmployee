@@ -2,6 +2,8 @@ package content
 
 import (
 	"context"
+	"log"
+	"sync"
 
 	"cloud.google.com/go/pubsub"
 )
@@ -9,16 +11,21 @@ import (
 var (
 	pubsubClient *pubsub.Client
 	topic        *pubsub.Topic
+	onceClient   sync.Once
 )
 
-// initializePubsub initializes the Pub/Sub client and topic.
-func initializePubsub() {
+func initializePubsub() error {
+	var err error
 	onceClient.Do(func() {
 		ctx := context.Background()
-		// Initialize Pub/Sub client.
-		pubsubClient, _ = pubsub.NewClient(ctx, "takeoff-task-3")
-		// Replace "your-topic-name" with the actual name you want for your Pub/Sub topic.
+		pubsubClient, err = pubsub.NewClient(ctx, "takeoff-task-3")
+		if err != nil {
+			// Handle error creating Pub/Sub client.
+			log.Fatalf("Error creating Pub/Sub client: %v", err)
+			return
+		}
+		// Replace "your-topic-name" with the actual name of your Pub/Sub topic.
 		topic = pubsubClient.Topic("create-employee-topic")
-
 	})
+	return err
 }

@@ -19,7 +19,7 @@ type Employee struct {
 }
 
 func initializeFirestore() {
-	onceClient.Do(func() {
+	Once.Do(func() {
 		ctx := context.Background()
 
 		// Initialize Firestore with the service account key
