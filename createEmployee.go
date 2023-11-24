@@ -10,7 +10,6 @@ import (
 	"cloud.google.com/go/firestore"
 	"cloud.google.com/go/logging"
 	"cloud.google.com/go/pubsub"
-	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
 	"github.com/Shubham005x1/MyValidations/validations"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -20,10 +19,6 @@ var (
 	logClient  *logging.Client
 	onceClient sync.Once
 )
-
-func init() {
-	functions.HTTP("CreateEmployee", CreateEmployee)
-}
 
 // CreateEmployee handles the creation of an employee record.
 func CreateEmployee(w http.ResponseWriter, r *http.Request) {
